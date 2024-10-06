@@ -1,0 +1,10 @@
+[lcl-host]
+realm-apid = 'localhost'
+
+[org]
+apid = 'darkskittlz'
+
+[service]
+apid = 'paymentanalytics'
+category = 'javascript'
+cert-style = 'acme'
