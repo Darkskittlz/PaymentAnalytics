@@ -1,11 +1,12 @@
 'use client'
 
 import { useSearchParams } from "next/navigation";
+import { Suspense } from 'react';
 
-export default function PaymentSuccess() {
+export function PaymentSuccessContent() {
   const searchParams = useSearchParams();
 
-  const amount = searchParams.get("amount")
+  const amount = searchParams.get("amount") || '0.00';
 
   console.log()
   return (
@@ -19,5 +20,13 @@ export default function PaymentSuccess() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function PaymentSuccess() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }
