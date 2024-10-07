@@ -33,7 +33,7 @@ const CheckoutPage = ({ amount }) => {
         "Content-Type": "application/json",
       },
       // Send the payment amount after converting it to cents
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         amount: convertToSubcurrency(amount),
         username: username,
         email: email,
@@ -43,9 +43,9 @@ const CheckoutPage = ({ amount }) => {
 
       //Store the client secret in clientSecret state to show loading state and allow user to
       //pay only when they're verified by stripe with a unique secret
-      .then((data) => setClientSecret(data.clientSecret)); 
+      .then((data) => setClientSecret(data.clientSecret));
 
-  }, [ amount ]); // useEffect runs again when amount changes
+  }, [amount]); // useEffect runs again when amount changes
 
 
   const handleSubmit = async (event) => {
@@ -133,7 +133,6 @@ const CheckoutPage = ({ amount }) => {
         className='text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse'
       >
         {!loading ? `Pay $${amount}` : "Processing..."}
-
       </button>
 
     </form>

@@ -13,6 +13,10 @@ export async function POST(request, NextRequest) {
         username: username,
         email: email,
       },
+      billing: {
+        username: username,
+        email: email,
+      }
     });
 
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
