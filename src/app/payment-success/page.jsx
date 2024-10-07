@@ -2,11 +2,16 @@
 
 import { useSearchParams } from "next/navigation";
 import { Suspense } from 'react';
+import { useRouter } from 'next/navigation'
 
 export function PaymentSuccessContent() {
   const searchParams = useSearchParams();
-
   const amount = searchParams.get("amount") || '0.00';
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/');
+  }
 
   console.log()
   return (
@@ -19,6 +24,7 @@ export function PaymentSuccessContent() {
           ${amount}
         </div>
       </div>
+      <button onClick={handleClick}>Return Home</button>
     </main>
   );
 }

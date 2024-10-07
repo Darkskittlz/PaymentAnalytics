@@ -3,11 +3,13 @@
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import React, { useEffect, useState } from 'react'
 import convertToSubcurrency from '@/lib/convertToSubcurrency'
+import { useRouter } from 'next/navigation'
 
 const CheckoutPage = ({ amount }) => {
   // Get the Stripe instance and the elements wrapper from the Stripe hook
   const stripe = useStripe();
   const elements = useElements();
+  const router = useRouter();
 
   const [errorMessage, setErrorMessage] = useState();
   const [clientSecret, setClientSecret] = useState("");
@@ -21,12 +23,26 @@ const CheckoutPage = ({ amount }) => {
 
   // Example of Payment Intent created by the server:
   // const paymentIntent = await stripe.paymentIntents.create({
-  //   amount: 1099, // Amount in subunits, e.g., cents
+  //   amount: 1100, // Amount in subunits, e.g., cents
   //   currency: 'usd',
   //   payment_method_types: ['card'],
   // });
+  //
+  const handleNameChange = (e) => {
+    setUsername(e.target.value);
+    console.log("username: ", username);
+  }
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+    console.log("email: ", email);
+  }
 
   useEffect(() => {
+    const username = localStorage.getItem('username');
+    const email = localStorage.getItem('email');
+
+
     fetch("/api/create-payment-intent", {
       method: "POST",
       headers: {
@@ -45,12 +61,15 @@ const CheckoutPage = ({ amount }) => {
       //pay only when they're verified by stripe with a unique secret
       .then((data) => setClientSecret(data.clientSecret));
     setLoading(false);
-  }, [amount]); // useEffect runs again when amount changes
+  }, [amount, username, email]); // useEffect runs again when amount changes
 
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
+
+    localStorage.setItem('username', username);
+    localStorage.setItem('email', email);
 
     // Security check to ensure Stripe and Elements are loaded. Otherwise the ui will return a blank page.
     if (!stripe || !elements) {
@@ -79,6 +98,12 @@ const CheckoutPage = ({ amount }) => {
       clientSecret,
       confirmParams: {
         return_url: `http://www.localhost:3000/payment-success?amount=${amount}`,
+        payment_method_data: {
+          billing_details: {
+            name: username,
+            email: email,
+          }
+        },
       },
     });
 
@@ -89,6 +114,7 @@ const CheckoutPage = ({ amount }) => {
     } else {
       // Payment UI automatically closes with a success animation. 
       // Customer is redirected to redirect url.
+      router.push(`/payment-success?amount=${amount}`);
     }
     setLoading(false);
   }
@@ -98,10 +124,10 @@ const CheckoutPage = ({ amount }) => {
     return (
       <div className="flex items-center justify-center">
         <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
+          className="inline-block h-7 w-8 animate-spin rounded-full border-4 border-solid border-current border-e-transparent align-[-0.125em] text-surface motion-reduce:animate-[spin_1.5s_linear_infinite] dark:text-white"
           role="status"
         >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border1 !p-0 ![clip:rect(0,0,0,0)]">
             Loading...
           </span>
         </div>
@@ -110,31 +136,31 @@ const CheckoutPage = ({ amount }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className='bg-white p-2 rounded-md mt-8'>
-      <div className='flex w-full py-4'>
-        <div className='w-11/12 justify-center'>
+    <form onSubmit={handleSubmit} className='bg-white p-1 rounded-md mt-8'>
+      <div className='flex w-full py-3 pt-4'>
+        <div className='w-10/12 justify-center'>
           <input
             className="border-b-2 w-3/4 border-black text-black"
             type="text"
             placeholder="Enter username"
             value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            onChange={handleNameChange}
           />
         </div>
-        <div className='w-11/12 justify-center'>
+        <div className='w-10/12 justify-center'>
           <input
             className="border-b-2 w-3/4 border-black text-black"
             type="text"
             placeholder="Enter Email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={handleEmailChange}
           />
         </div>
       </div>
       {clientSecret && <PaymentElement />}
       <button
         disabled={!stripe || loading}
-        className='text-white w-full p-5 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse'
+        className='text-white w-full p-4 bg-black mt-2 rounded-md font-bold disabled:opacity-50 disabled:animate-pulse'
       >
         {!loading ? `Pay $${amount}` : "Processing..."}
       </button>
