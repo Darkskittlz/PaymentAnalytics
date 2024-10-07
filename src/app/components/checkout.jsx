@@ -44,7 +44,7 @@ const CheckoutPage = ({ amount }) => {
       //Store the client secret in clientSecret state to show loading state and allow user to
       //pay only when they're verified by stripe with a unique secret
       .then((data) => setClientSecret(data.clientSecret));
-
+    setLoading(false);
   }, [amount]); // useEffect runs again when amount changes
 
 
@@ -111,21 +111,25 @@ const CheckoutPage = ({ amount }) => {
 
   return (
     <form onSubmit={handleSubmit} className='bg-white p-2 rounded-md mt-8'>
-      <div className='flex justify-start flex-wrap justify-center gap-4 py-4'>
-        <input
-          className="border-b-2 border-black w-1/3 text-black px-2"
-          type="text"
-          placeholder="Enter username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <input
-          className="border-b-2 border-black text-black mt-2 w-1/3 px-2"
-          type="text"
-          placeholder="Enter Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <div className='flex w-full py-4'>
+        <div className='w-11/12 justify-center'>
+          <input
+            className="border-b-2 w-3/4 border-black text-black"
+            type="text"
+            placeholder="Enter username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className='w-11/12 justify-center'>
+          <input
+            className="border-b-2 w-3/4 border-black text-black"
+            type="text"
+            placeholder="Enter Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
       </div>
       {clientSecret && <PaymentElement />}
       <button
