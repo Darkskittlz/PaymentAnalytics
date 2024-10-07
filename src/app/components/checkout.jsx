@@ -137,7 +137,7 @@ const CheckoutPage = ({ amount }) => {
 
   return (
     <form onSubmit={handleSubmit} className='bg-white p-1 rounded-md mt-8'>
-      <div className='flex w-full py-3 pt-4'>
+      <div className='flex w-full py-5'>
         <div className='w-10/12 justify-center'>
           <input
             className="border-b-2 w-3/4 border-black text-black"
